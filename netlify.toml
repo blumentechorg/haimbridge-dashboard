@@ -1,0 +1,8 @@
+# netlify.toml (project root)
+[build]
+  command = "npm run build"
+  # plugin will create the correct files, but .next is a safe publish setting for plugin-enabled sites
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
