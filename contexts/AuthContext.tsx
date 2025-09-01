@@ -1,19 +1,19 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import api from '../lib/axios';
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { apiService } from "../lib/api";
 
-interface User {
+export interface User {
 	id: string;
 	name: string;
 	email: string;
-	role: 'owner' | 'finance' | 'viewer';
+	role: "owner" | "manager" | "viewer";
 }
 
 interface AuthContextType {
 	user: User | null;
 	loading: boolean;
-	login: (email: string, password: string) => Promise<boolean>;
+	login: (email: string, password: string) => Promise<void>;
 	logout: () => void;
 	isAuthenticated: boolean;
 }
@@ -26,57 +26,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 	useEffect(() => {
 		// Check for existing token on app load
-		const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
+		const token = localStorage.getItem("auth_token");
 		if (token) {
-			// Validate token with backend
-			validateToken();
+			validateToken(token);
 		} else {
 			setLoading(false);
 		}
 	}, []);
 
-	const validateToken = async () => {
+	const validateToken = async (token: string) => {
 		try {
-			const response = await api.get('/auth/me');
-			setUser(response.data.user);
+			const userData = await apiService.getCurrentUser();
+			setUser(userData);
 		} catch (error) {
-			// Token is invalid, clear it
-			localStorage.removeItem('auth_token');
-			sessionStorage.removeItem('auth_token');
+			console.error("Token validation failed:", error);
+			localStorage.removeItem("auth_token");
 		} finally {
 			setLoading(false);
 		}
 	};
 
-	const login = async (email: string, password: string): Promise<boolean> => {
+	const login = async (email: string, password: string) => {
 		try {
-			setLoading(true);
-			const response = await api.post('/auth/login', { email, password });
-			const { token, user } = response.data;
+			const response = await apiService.login(email, password);
 			
-			// Store token
-			localStorage.setItem('auth_token', token);
+			// Store token in localStorage and cookie
+			localStorage.setItem("auth_token", response.token);
+			document.cookie = `auth_token=${response.token}; path=/; max-age=${60 * 60 * 24 * 7}`; // 7 days
 			
-			// Set user
-			setUser(user);
-			
-			return true;
+			// Set user data
+			setUser(response.user);
 		} catch (error) {
-			console.error('Login failed:', error);
-			return false;
-		} finally {
-			setLoading(false);
+			console.error("Login failed:", error);
+			throw error;
 		}
 	};
 
 	const logout = () => {
-		// Clear auth data
-		localStorage.removeItem('auth_token');
-		sessionStorage.removeItem('auth_token');
+		localStorage.removeItem("auth_token");
+		document.cookie = "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
 		setUser(null);
-		
-		// Redirect to login
-		window.location.href = '/login';
 	};
 
 	const value: AuthContextType = {
@@ -97,7 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
 	const context = useContext(AuthContext);
 	if (context === undefined) {
-		throw new Error('useAuth must be used within an AuthProvider');
+		throw new Error("useAuth must be used within an AuthProvider");
 	}
 	return context;
 }

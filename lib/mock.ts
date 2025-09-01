@@ -75,10 +75,10 @@ export function generateTransactions(
 			const paymentMethod = pick(rand, paymentMethods);
 			const base =
 				stream === "room_booking"
-					? 120 + rand() * 200
+					? 15000 + rand() * 25000 // ₦15,000 - ₦40,000 per night
 					: stream === "event_hosting"
-					? 500 + rand() * 2500
-					: 20 + rand() * 150;
+					? 50000 + rand() * 150000 // ₦50,000 - ₦200,000 per event
+					: 2000 + rand() * 8000; // ₦2,000 - ₦10,000 for other services
 			const declared = Math.round(base * (0.9 + rand() * 0.6) * 100) / 100;
 			// Introduce occasional under-remittance
 			const underFactor = rand() < 0.2 ? 0.85 + rand() * 0.1 : 1;

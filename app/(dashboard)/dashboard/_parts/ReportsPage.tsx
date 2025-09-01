@@ -132,15 +132,15 @@ export default function ReportsPage() {
 				<h3 className="font-semibold mb-4">Report Summary</h3>
 				<div className="grid gap-4 md:grid-cols-3">
 					<div className="text-center">
-						<div className="kpi-value">$2.4M</div>
+						<div className="kpi-value">₦24M</div>
 						<div className="kpi-title">Total Revenue</div>
 					</div>
 					<div className="text-center">
-						<div className="kpi-value">$1.8M</div>
+						<div className="kpi-value">₦24M</div>
 						<div className="kpi-title">Declared Remittance</div>
 					</div>
 					<div className="text-center">
-						<div className="kpi-value">$2.1M</div>
+						<div className="kpi-value">₦21M</div>
 						<div className="kpi-title">Actual Remittance</div>
 					</div>
 				</div>

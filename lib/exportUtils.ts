@@ -24,15 +24,18 @@ export async function exportToPDF(data: Transaction[], filename: string) {
 		body: data.map((item) => [
 			new Date(item.date).toLocaleDateString(),
 			item.stream,
-			`$${item.amountDeclared.toLocaleString()}`,
-			`$${item.amountRemitted.toLocaleString()}`,
+			`₦${item.amountDeclared.toLocaleString()}`,
+			`₦${item.amountRemitted.toLocaleString()}`,
 			item.paymentMethod,
 		]),
 		styles: {
-			fontSize: 8,
+			fontSize: 10,
+			cellPadding: 3,
 		},
 		headStyles: {
-			fillColor: [66, 66, 66],
+			fillColor: [59, 130, 246],
+			textColor: 255,
+			fontStyle: "bold",
 		},
 	});
 	

@@ -16,7 +16,7 @@ export default function MetricsOverview() {
 			try {
 				setLoading(true);
 				const data = await apiService.getMetrics(fromISO, toISO);
-				setMetrics(data.summary);
+				setMetrics(data); // Fixed: data is already MetricsSummary
 			} catch (error) {
 				console.error('Failed to fetch metrics:', error);
 				// Fallback to default metrics
